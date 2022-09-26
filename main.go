@@ -14,7 +14,7 @@ import (
 
 var (
 	tickTockPeriodStr = "5s"
-	httpPort          = ":8080"
+	httpPort          = ":9080"
 	metricsPath       = "/metrics"
 	tickTockMsgFmt    = "tick tock #%d"
 )

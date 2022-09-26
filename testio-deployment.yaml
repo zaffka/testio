@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ticktock
+  labels:
+    app: ticktock
+    service: ticktock
+spec:
+  ports:
+  - port: 9080
+    name: http
+  selector:
+    app: ticktock
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ticktock
+  labels:
+    account: ticktock
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ticktock-v1
+  labels:
+    app: ticktock
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ticktock
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: ticktock
+        version: v1
+    spec:
+      serviceAccountName: ticktock
+      containers:
+      - name: testio-ticktock
+        image: localhost:5001/testio:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9080
+        securityContext:
+          runAsUser: 1000
