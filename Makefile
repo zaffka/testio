@@ -1,4 +1,4 @@
-.PHONY: up down build apply remove
+.PHONY: up down build push apply remove addons
 
 up:
 	./cluster_and_registry.sh
@@ -25,3 +25,7 @@ apply:
 remove:
 	kubectl delete -f testio-deployment.yaml
 	kubectl delete -f testio-gateway.yaml
+
+addons:
+	kubectl apply -f istio_addons/
+	kubectl rollout status deployment/kiali -n istio-system
