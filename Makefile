@@ -1,7 +1,13 @@
-.PHONY: up down build push apply remove addons
+.PHONY: up kubeup istioup down build push apply remove addons
 
-up:
+all: up build push apply
+
+up: kubeup istioup
+
+kubeup:
 	./cluster_and_registry.sh
+
+istioup:
 	istioctl install --set profile=demo -y
 	kubectl label namespace default istio-injection=enabled
 	
@@ -12,7 +18,6 @@ down:
 build:
 	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-X main.periodStr=5s" -o testio .
 	docker build -t localhost:5001/testio:latest .
-	docker push localhost:5001/testio:latest
 
 push:
 	docker push localhost:5001/testio:latest
@@ -20,7 +25,6 @@ push:
 apply:
 	kubectl apply -f testio-deployment.yaml
 	kubectl apply -f testio-gateway.yaml
-	# Watch README.md to evaluate environment variables
 
 remove:
 	kubectl delete -f testio-deployment.yaml
