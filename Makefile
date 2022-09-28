@@ -25,6 +25,8 @@ push:
 apply:
 	kubectl apply -f testio-deployment.yaml
 	kubectl apply -f testio-gateway.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
+	kubectl apply -f service-account.yaml
 
 remove:
 	kubectl delete -f testio-deployment.yaml
@@ -33,3 +35,6 @@ remove:
 addons:
 	kubectl apply -f istio_addons/
 	kubectl rollout status deployment/kiali -n istio-system
+
+token:
+	kubectl -n kubernetes-dashboard create token admin-user
