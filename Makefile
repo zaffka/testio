@@ -40,3 +40,9 @@ addons:
 
 token:
 	kubectl -n kubernetes-dashboard create token admin-user
+
+migrate-up:
+	migrate -path sql/migrations -database clickhouse://localhost:9000 up
+
+migrate-down:
+	migrate -path sql/migrations -database clickhouse://localhost:9000 down
