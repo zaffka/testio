@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  clickhouse:
+    container_name: kind-clickhouse
+    image: yandex/clickhouse-server
+    ports:
+      - 8123:8123
+      - 9000:9000
+      - 9009:9009
+    volumes:
+      - ./db:/var/lib/clickhouse
+    networks:
+        - kind
+
+networks:
+  kind:
+    external: true

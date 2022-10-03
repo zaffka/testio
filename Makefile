@@ -6,6 +6,7 @@ up: kubeup istioup
 
 kubeup:
 	./cluster_and_registry.sh
+	docker compose up -d
 
 istioup:
 	istioctl install --set profile=demo -y
@@ -14,6 +15,7 @@ istioup:
 down:
 	kind delete cluster
 	docker rm kind-registry -f
+	docker compose down
 
 build:
 	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-X main.periodStr=5s" -o testio .
@@ -23,17 +25,17 @@ push:
 	docker push localhost:5001/testio:latest
 
 apply:
-	kubectl apply -f testio-deployment.yaml
-	kubectl apply -f testio-gateway.yaml
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.6.1/aio/deploy/recommended.yaml
-	kubectl apply -f service-account.yaml
+	kubectl apply -f specs/testio-deployment.yaml
+	kubectl apply -f specs/testio-gateway.yaml
+	kubectl apply -f specs/dashboard.yaml
+	kubectl apply -f specs/service-account.yaml
 
 remove:
-	kubectl delete -f testio-deployment.yaml
-	kubectl delete -f testio-gateway.yaml
+	kubectl delete -f specs/testio-deployment.yaml
+	kubectl delete -f specs/testio-gateway.yaml
 
 addons:
-	kubectl apply -f istio_addons/
+	kubectl apply -f specs/istio_addons/
 	kubectl rollout status deployment/kiali -n istio-system
 
 token:
