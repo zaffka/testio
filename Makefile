@@ -25,17 +25,19 @@ push:
 	docker push localhost:5001/testio:latest
 
 apply:
-	kubectl apply -f specs/testio-deployment.yaml
-	kubectl apply -f specs/testio-gateway.yaml
-	kubectl apply -f specs/dashboard.yaml
-	kubectl apply -f specs/service-account.yaml
+	kubectl apply -f .k8s/specs/testio-deployment.yaml
+	kubectl apply -f .k8s/specs/testio-gateway.yaml
+	kubectl apply -f .k8s/specs/dashboard.yaml
+	kubectl apply -f .k8s/specs/service-account.yaml
 
 remove:
-	kubectl delete -f specs/testio-deployment.yaml
-	kubectl delete -f specs/testio-gateway.yaml
+	kubectl delete -f .k8s/specs/testio-deployment.yaml
+	kubectl delete -f .k8s/specs/testio-gateway.yaml
+	kubectl delete -f .k8s/specs/dashboard.yaml
+	kubectl delete -f .k8s/specs/service-account.yaml
 
 addons:
-	kubectl apply -f specs/istio_addons/
+	kubectl apply -f .k8s/specs/istio_addons/
 	kubectl rollout status deployment/kiali -n istio-system
 
 token:
