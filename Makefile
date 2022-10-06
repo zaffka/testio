@@ -18,7 +18,8 @@ down:
 	docker compose down
 
 build:
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-X main.periodStr=5s" -o testio .
+	$(eval GIT_BRANCH=$(shell git rev-parse --short HEAD))
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-X main.ver=$(GIT_BRANCH)" -o testio .
 	docker build -t localhost:5001/testio:latest .
 
 push:

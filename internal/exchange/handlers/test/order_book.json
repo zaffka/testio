@@ -1,0 +1,33 @@
+{
+    "type": "subscriptionData",
+    "server_timestamp": 1658671218110,
+    "request_id": "e26dc682-f1f0-4583-a4e7-5fb6a4be4725",
+    "payload": {
+        "channel": "spotOrderbookVolumes.ETH_EUR",
+        "data": {
+            "base_scheme": {
+                "offset": 107809774830,
+                "provider_offset": 6750993509
+            },
+            "volumes": {
+                "bids": {
+                    "1547.73": "0.4199948",
+                    "1547.14": "0.88859254",
+                    "1546.76": "0.98774458",
+                    "1546.72": "0",
+                    "1547.68": "0.92417714",
+                    "1547.24": "0.21767242"
+                },
+                "asks": {
+                    "1550.93": "0.32015861",
+                    "1550.08": "0",
+                    "1550.07": "0",
+                    "1551.2": "0.7825045"
+                }
+            },
+            "timestamp": 1658671217376,
+            "trade_pair": "ETH_EUR"
+        },
+        "nonce": 10
+    }
+}

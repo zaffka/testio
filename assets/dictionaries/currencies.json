@@ -1,0 +1,20 @@
+[
+    {
+        "code": "EUR",
+        "name": "Euro",
+        "iso_num": 978,
+        "precision": 2
+    },
+    {
+        "code": "USD",
+        "name": "US Dollar",
+        "iso_num": 840,
+        "precision": 2
+    },
+    {
+        "code": "GBP",
+        "name": "British Pound",
+        "iso_num": 826,
+        "precision": 2
+    }
+]

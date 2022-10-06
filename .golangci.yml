@@ -1,0 +1,45 @@
+run:
+  timeout: 5m
+
+linters:
+  fast: false
+  disable-all: true
+  enable:
+    - asciicheck
+    - deadcode
+    - depguard
+    - dogsled
+    - errcheck
+    - errorlint
+    - exportloopref
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - goerr113
+    - gofmt
+    - goheader
+    - goimports
+    - revive
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nlreturn
+    - nolintlint
+    - prealloc
+    - predeclared
+    - exportloopref
+    - staticcheck
+    - stylecheck
+    - testpackage
+    - unconvert
+    - unused
+    - varcheck
+    - whitespace

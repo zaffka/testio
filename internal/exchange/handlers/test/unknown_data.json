@@ -1,0 +1,16 @@
+{
+    "type": "subscriptionData",
+    "server_timestamp": 1658671212260,
+    "request_id": "a9df74ba-2afa-4661-991d-703b073d194c",
+    "payload": {
+        "channel": "spotTickers.ETH_EUR",
+        "data": {
+            "offset": 107809760533,
+            "provider_offset": 6750992454,
+            "1d_high": "1595.360000000000000000",
+            "1d_low": "1459.880000000000000000",
+            "1d_volume": "1974.455717620000000000"
+        },
+        "nonce": 1
+    }
+}

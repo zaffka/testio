@@ -1,0 +1,12 @@
+[
+    {
+        "code": "ETH",
+        "name": "Ethereum",
+        "precision": 18
+    },
+    {
+        "code": "BNB",
+        "name": "Binance Coin",
+        "precision": 8
+    }
+]

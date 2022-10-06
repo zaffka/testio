@@ -2,66 +2,82 @@ package main
 
 import (
 	"context"
-	"errors"
-	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/zaffka/testio/config"
+	"github.com/zaffka/testio/internal/exchange"
+	"github.com/zaffka/testio/pkg/metrics"
+	"github.com/zaffka/testio/pkg/zaplog"
+	"go.uber.org/zap"
+)
+
+const (
+	serviceName      = "testio"
+	microServiceName = "quote-acquirer"
+
+	httpShutdownTimeout = 5 * time.Second
 )
 
 var (
-	tickTockPeriodStr = "5s"
-	httpPort          = ":9080"
-	metricsPath       = "/metrics"
-	tickTockMsgFmt    = "tick tock #%d"
+	ver = "dev"
 )
 
 func main() {
-	tickTockPeriod, err := time.ParseDuration(tickTockPeriodStr)
+	hostname, err := os.Hostname()
 	if err != nil {
-		log.Printf("failed to parse period, tickTockPeriodStr variable holds %s", tickTockPeriodStr)
-		os.Exit(1)
+		panic(err.Error())
 	}
 
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
-	defer cancel()
+	cfg, err := config.New()
+	if err != nil {
+		panic(err.Error())
+	}
 
-	go runHTTPServ(cancel)                 // with prometheus default handler
-	go tickTockLogger(ctx, tickTockPeriod) // just to see something in logs
+	rootCtx, rootCancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
+	defer rootCancel()
 
-	<-ctx.Done()
-}
+	logger := zaplog.New(os.Stderr, zaplog.Opts{
+		Host:             hostname,
+		Service:          serviceName,
+		MicroService:     microServiceName,
+		Version:          ver,
+		Debug:            cfg.Debug,
+		IsDevEnvironment: cfg.DevMode,
+	})
 
-func tickTockLogger(ctx context.Context, period time.Duration) {
-	ticker := time.NewTicker(period)
-	defer ticker.Stop()
-
-	i := 0
-	for {
-		select {
-		case <-ticker.C:
-			log.Printf(tickTockMsgFmt, i)
-		case <-ctx.Done():
-			return
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			logger.Error("failed to flush logger data", zap.Error(err))
 		}
 
-		i++
-	}
-}
+		logger.Info("the app is finished")
+	}()
 
-func runHTTPServ(ctxCancelFn context.CancelFunc) {
-	log.Printf("Starting HTTP server, port %s, metrics path %s", httpPort, metricsPath)
+	logger.Info("starting the app")
 
-	http.Handle(metricsPath, promhttp.Handler())
-	err := http.ListenAndServe(httpPort, nil)
-	if errors.Is(err, http.ErrServerClosed) {
-		return
-	}
-
+	metricServ := metrics.Run(cfg.HTTPPort, logger, rootCancel)
+	teardownFn, err := exchange.New(exchange.Opts{
+		Ctx:           rootCtx,
+		Logger:        logger,
+		Configuration: cfg.CryptologyMarket,
+	})
 	if err != nil {
-		ctxCancelFn()
+		logger.Error("failed to init an exchange", zap.Error(err))
+	}
+	defer func() {
+		if err := teardownFn(); err != nil {
+			logger.Error("failed to close exchange connection", zap.Error(err))
+		}
+	}()
+
+	<-rootCtx.Done()
+
+	ctx, cancel := context.WithTimeout(context.Background(), httpShutdownTimeout)
+	defer cancel()
+
+	if err := metricServ.Shutdown(ctx); err != nil {
+		logger.Error("failed to gracefully shutdown an http server", zap.Error(err))
 	}
 }
