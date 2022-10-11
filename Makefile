@@ -2,19 +2,25 @@
 
 all: up build push apply
 
-up: kubeup istioup
+up: kubeup dockerup istioup
+
+dockerup:
+	docker compose up -d
 
 kubeup:
 	./cluster_and_registry.sh
-	docker compose up -d
 
 istioup:
 	istioctl install --set profile=demo -y
 	kubectl label namespace default istio-injection=enabled
-	
-down:
+
+down: clusterdown dockerdown
+
+clusterdown:
 	kind delete cluster
 	docker rm kind-registry -f
+
+dockerdown:
 	docker compose down
 
 build:
