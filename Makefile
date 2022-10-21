@@ -11,7 +11,7 @@ kubeup:
 	./cluster_and_registry.sh
 
 istioup:
-	istioctl install --set profile=demo -y
+	istioctl install --set profile=demo --set meshConfig.outboundTrafficPolicy.mode=ALLOW_ANY -y
 	kubectl label namespace default istio-injection=enabled
 
 down: clusterdown dockerdown
@@ -37,14 +37,16 @@ apply:
 	kubectl apply -f .k8s/specs/dashboard.yaml
 	kubectl apply -f .k8s/specs/service-account.yaml
 
-remove:
+delapps:
 	kubectl delete -f .k8s/specs/testio-deployment.yaml
+
+remove: delapps
 	kubectl delete -f .k8s/specs/testio-gateway.yaml
 	kubectl delete -f .k8s/specs/dashboard.yaml
 	kubectl delete -f .k8s/specs/service-account.yaml
 
 addons:
-	kubectl apply -f .k8s/specs/istio_addons/
+	kubectl apply -f .k8s/istio_addons/
 	kubectl rollout status deployment/kiali -n istio-system
 
 token:
@@ -55,3 +57,6 @@ migrate-up:
 
 migrate-down:
 	migrate -path sql/migrations -database clickhouse://localhost:9000 down
+
+kiali:
+	istioctl dashboard kiali
