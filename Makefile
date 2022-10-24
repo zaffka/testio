@@ -2,7 +2,7 @@
 
 all: up build push apply
 
-up: kubeup dockerup istioup
+up: kubeup build push
 
 dockerup:
 	docker compose up -d
@@ -33,9 +33,9 @@ push:
 
 apply:
 	kubectl apply -f .k8s/specs/testio-deployment.yaml
-	kubectl apply -f .k8s/specs/testio-gateway.yaml
-	kubectl apply -f .k8s/specs/dashboard.yaml
-	kubectl apply -f .k8s/specs/service-account.yaml
+	# kubectl apply -f .k8s/specs/testio-gateway.yaml
+	# kubectl apply -f .k8s/specs/dashboard.yaml
+	# kubectl apply -f .k8s/specs/service-account.yaml
 
 delapps:
 	kubectl delete -f .k8s/specs/testio-deployment.yaml
@@ -60,3 +60,17 @@ migrate-down:
 
 kiali:
 	istioctl dashboard kiali
+
+linkerd:
+	linkerd install --crds | kubectl apply -f -
+	linkerd check
+	linkerd install | kubectl apply -f -
+	linkerd viz install | kubectl apply -f -
+	linkerd check
+	kubectl get deploy/ticktock-v1 -o yaml | linkerd inject - | kubectl apply -f -
+	# helm repo add grafana https://grafana.github.io/helm-charts
+	# helm install grafana -n grafana --create-namespace grafana/grafana -f https://raw.githubusercontent.com/linkerd/linkerd2/main/grafana/values.yaml
+	# linkerd viz install --set grafana.url=grafana.grafana:3000 | kubectl apply -f -
+
+ldash:
+	linkerd viz dashboard
