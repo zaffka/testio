@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/zaffka/testio/config"
@@ -35,7 +36,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	rootCtx, rootCancel := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
+	rootCtx, rootCancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer rootCancel()
 
 	logger := zaplog.New(os.Stderr, zaplog.Opts{
@@ -48,11 +49,9 @@ func main() {
 	})
 
 	defer func() {
-		if err := logger.Sync(); err != nil {
-			logger.Error("the app is finished with an error", zap.Error(err))
-		} else {
-			logger.Info("the app is finished")
-		}
+		logger.Info("the app has finished")
+
+		_ = logger.Sync()
 	}()
 
 	logger.Info("starting the app")

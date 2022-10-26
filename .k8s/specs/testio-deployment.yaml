@@ -42,7 +42,7 @@ spec:
       containers:
       - name: testio-ticktock
         image: localhost:5001/testio:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - containerPort: 9080
         securityContext:
