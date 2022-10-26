@@ -49,10 +49,10 @@ func main() {
 
 	defer func() {
 		if err := logger.Sync(); err != nil {
-			logger.Error("failed to flush logger data", zap.Error(err))
+			logger.Error("the app is finished with an error", zap.Error(err))
+		} else {
+			logger.Info("the app is finished")
 		}
-
-		logger.Info("the app is finished")
 	}()
 
 	logger.Info("starting the app")
@@ -79,5 +79,7 @@ func main() {
 
 	if err := metricServ.Shutdown(ctx); err != nil {
 		logger.Error("failed to gracefully shutdown an http server", zap.Error(err))
+	} else {
+		logger.Info("http server gracefully shut")
 	}
 }
