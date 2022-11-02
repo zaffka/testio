@@ -1,18 +1,12 @@
-.PHONY: up kubeup istioup down build push apply remove addons
-
 all: up build push apply
 
-up: kubeup build push
+up: kubeup
 
 dockerup:
 	docker compose up -d
 
 kubeup:
 	./cluster_and_registry.sh
-
-istioup:
-	istioctl install --set profile=demo --set meshConfig.outboundTrafficPolicy.mode=ALLOW_ANY -y
-	kubectl label namespace default istio-injection=enabled
 
 down: clusterdown dockerdown
 
